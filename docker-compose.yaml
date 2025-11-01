@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_db_mod10
+    command: "./qdrant --config-path /config/config.yaml"
+    ports:
+      - "6333:6333" # GRPC port: General Remote Procedure Call
+      - "6334:6334" # REST API port
+    volumes:
+      - ./qdrant_data:/qdrant/storage # data storage volume qdrant
+      - ./qdrant_config/config.yaml:/config/config.yaml # configuration file
+    restart: always # Always restart the container

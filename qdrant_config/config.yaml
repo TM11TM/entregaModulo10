@@ -1,0 +1,28 @@
+log_level: INFO
+
+storage:
+  node_type: 'Normal'
+
+  performance:
+    max_search_threads: 0 # threads auto-detect
+    optimizer_cpu_budget: 0 # cpu auto-detect
+
+  # Index: donde guardamos los vectores
+  hnsw_index:
+    m: 16 # Cantidad de conexiones por nodo
+    ef_construct: 100 # Cantidad de nodos vecinos
+    full_scan_threshold_kb: 10000 # Si la colección es menor a este tamaño, se usa búsqueda lineal
+
+    collection:
+      quantization: null
+
+service:
+  host: 0.0.0.0
+  http_port: 6333
+  grpc_port: 6334
+
+cluster:
+  enabled: false
+
+# Para desactivar la telemetría a qdrant
+telemetry_disabled: true
