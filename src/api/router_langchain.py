@@ -8,9 +8,6 @@ router = APIRouter()
 
 @router.post("/rag")
 async def rag_endpoint(request: RAGRequest):
-    """
-    Endpoint to interact with the RAG system.
-    """
     result = await rag_chain.ainvoke({"question": request.question})
     return {
         "question": result["question"],
@@ -18,13 +15,10 @@ async def rag_endpoint(request: RAGRequest):
         "source": result["source"].selection if result.get('source') else None,
         "source_reason": result["source"].reason if result.get('source') else None
     }
-
+    
+# Busqueda normal
 @router.get("/search")
 async def search(query: str = Query(..., description="Search query")):
-    """
-    Endpoint to perform similarity search in the vector store.
-    Returns only the content of the documents.
-    """
     found_docs = qdrant_langchain.similarity_search(query, k=5)
     
     return {
@@ -32,12 +26,9 @@ async def search(query: str = Query(..., description="Search query")):
         "results": [doc.page_content for doc in found_docs]
     }
 
+# Detailed endpount
 @router.get("/search-detailed")
 async def search_detailed(query: str = Query(..., description="Search query")):
-    """
-    Endpoint to perform similarity search in the vector store.
-    Returns content with full metadata for debugging purposes.
-    """
     found_docs = qdrant_langchain.similarity_search(query, k=5)
     
     return {

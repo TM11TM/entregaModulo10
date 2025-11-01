@@ -13,3 +13,4 @@ wheels/
 
 summaries.json
 /qdrant_data
+/optimized_chunks
