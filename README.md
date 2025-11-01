@@ -148,7 +148,7 @@ entregaModulo10/
 
 Coloca tus PDFs del BOE en `data/pdfs/`:
 
-### 2. uv run (summaries.json)
+### 2. uv run preprocessing.py
 
 Crea `data/summaries.json`:
 
@@ -168,7 +168,11 @@ Crea `data/summaries.json`:
 ### 3. Cargar documentos en Qdrant
 
 ```bash
-python scripts/preprocessing.py
+uv run scripts/routing_generation.py
+```
+y
+```bash
+uv run scripts/langchain_index.py
 ```
 
 Esto procesará todos los PDFs y los cargará en la base de datos vectorial.
@@ -373,5 +377,6 @@ docker restart <container_id>
 ---
 
 ⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub!
+
 
 
