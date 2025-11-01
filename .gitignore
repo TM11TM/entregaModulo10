@@ -10,7 +10,7 @@ wheels/
 .venv
 .vscode
 
-summaries.json
+
 
 # Qdrant database
-qdrant_data/
+qdrant_data
