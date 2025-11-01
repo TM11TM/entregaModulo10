@@ -168,7 +168,7 @@ Crea `data/summaries.json`:
 ### 3. Cargar documentos en Qdrant
 
 ```bash
-python scripts/load_qdrant.py
+python scripts/preprocessing.py
 ```
 
 Esto procesará todos los PDFs y los cargará en la base de datos vectorial.
@@ -373,4 +373,5 @@ docker restart <container_id>
 ---
 
 ⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub!
+
 
