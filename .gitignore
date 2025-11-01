@@ -8,6 +8,8 @@ dist/
 wheels/
 *.egg-info
 .venv
+.vscode
+/data
 
-
-
+summaries.json
+/qdrant_data
