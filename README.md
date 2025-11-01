@@ -35,13 +35,13 @@ Sistema de Retrieval-Augmented Generation (RAG) para consultar el Boletín Ofici
 │  3. Vector Search (Qdrant)          │
 │  4. Context Optimization            │
 │  5. Response Generation (Gemini)    │
-└──────┬────────┬──────────┬──────────┘
-       │        │          │
-       ▼        ▼          ▼
+└──────┬─────────┬──────────┬─────────┘
+       │         │          │
+       ▼         ▼          ▼
    ┌────────┐ ┌────────┐ ┌────────┐
-   │ Gemini │ │ Gemini │ │ Qdrant │
-   │  LLM   │ │ Embed  │ │ Vector │
-   │        │ │  768d  │ │   DB   │
+   │ Gemini │ │ BAAI/  │ │ Qdrant │
+   │  LLM   │ │ bge-m3 │ │ Vector │
+   │        │ │   HF   │ │   DB   │
    └────────┘ └────────┘ └────────┘
 ```
 
@@ -67,13 +67,7 @@ Crearemos el entorno virtual con UV y el project.toml
 uv sync 
 ```
 
-### 3. Instalar dependencias
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configurar variables de entorno
+### 3. Configurar variables de entorno
 
 Crea un archivo `.env` en la raíz del proyecto:
 
@@ -144,7 +138,7 @@ entregaModulo10/
 │   └── main.py                   # Entry point
 ├── .env                          # Variables de entorno
 ├── docker-compose.yaml           # Contenedores Docker
-├── requirements.txt              # Dependencias
+├── pyproject.toml                # Sincronizar dependecias
 └── README.md
 ```
 
@@ -326,46 +320,9 @@ new_doc = Document(
 
 qdrant_langchain.add_documents([new_doc])
 ```
-
-## 🧪 Testing
-
-```bash
-# Ejecutar tests
-pytest tests/
-
-# Test específico
-pytest tests/test_rag_chain.py -v
-
-# Con coverage
-pytest --cov=src tests/
-```
-
-## 🐛 Troubleshooting
-
-### Error: "Cannot import name 'source_selection_prompt'"
-
-**Solución:** Verifica que `src/process_langchain/__init__.py` exporte correctamente:
-
-```python
-from .prompts import source_selection_prompt, rag_prompt, none_selection_prompt
-from .structures import SourceModel
-
-__all__ = ['summaries', 'source_selection_prompt', 'rag_prompt', 'none_selection_prompt', 'SourceModel']
-```
-
-### Error: "Dimension mismatch" en Qdrant
-
-**Solución:** Verifica la dimensión de tus embeddings:
-
-```python
-from src.services.embeddings import embeddings_model_langchain
-test_emb = embeddings_model_langchain.embed_query("test")
-print(f"Dimensión: {len(test_emb)}")  # Debe coincidir con VectorParams(size=...)
-```
-
 ### Error 429: Rate Limit Exceeded
 
-**Solución:** Aumenta el `time.sleep()` en `load_qdrant.py`:
+**Solución:** Aumenta el `time.sleep()` en `langchain_index.py`:
 
 ```python
 time.sleep(60)  # Esperar 60 segundos entre batches
@@ -384,40 +341,6 @@ docker logs <container_id>
 docker restart <container_id>
 ```
 
-## 📈 Optimizaciones de Rendimiento
-
-### 1. Batch Processing
-
-Procesa documentos en batches para evitar rate limits:
-
-```python
-BATCH_SIZE = 20
-SLEEP_TIME = 45  # segundos
-```
-
-### 2. Caching de Embeddings
-
-Cachea embeddings para queries frecuentes:
-
-```python
-from functools import lru_cache
-
-@lru_cache(maxsize=100)
-def get_cached_embedding(text: str):
-    return embeddings_model.embed_query(text)
-```
-
-### 3. Reranking
-
-Mejora la precisión con reranking:
-
-```python
-from sentence_transformers import CrossEncoder
-
-reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
-reranked_docs = rerank(query, retrieved_docs)
-```
-
 ## 🔐 Seguridad
 
 ### Variables de entorno
@@ -431,72 +354,6 @@ reranked_docs = rerank(query, retrieved_docs)
 *.key
 ```
 
-### API Keys
-
-Usa secretos de entorno en producción:
-
-```bash
-# Docker
-docker run -e GOOGLE_API_KEY=$GOOGLE_API_KEY ...
-
-# Kubernetes
-kubectl create secret generic api-keys --from-literal=google-api-key=$GOOGLE_API_KEY
-```
-
-## 📦 Deployment
-
-### Docker
-
-```dockerfile
-FROM python:3.12-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-
-CMD ["python", "src/main.py"]
-```
-
-```bash
-docker build -t boe-rag-system .
-docker run -p 8000:8000 --env-file .env boe-rag-system
-```
-
-### Railway / Render
-
-```yaml
-# render.yaml
-services:
-  - type: web
-    name: boe-rag-api
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python src/main.py
-    envVars:
-      - key: GOOGLE_API_KEY
-        sync: false
-```
-
-## 🤝 Contribuciones
-
-Las contribuciones son bienvenidas. Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
-
-## 👤 Autor
-
-**Carlos Toro Morales**
-- Email: carlos.toro.morales11@gmail.com
 - Proyecto: Módulo 10 - PONTIA
 
 ## 🙏 Agradecimientos
@@ -516,3 +373,4 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 ---
 
 ⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub!
+
